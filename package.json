@@ -9,12 +9,10 @@
     "cheerio": "^1.0.0-rc.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
-    "ejs": "^2.5.9",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "superagent": "^3.8.2",
-    "superagent-proxy": "^1.0.3",
-    "vue-cli": "^2.9.3"
+    "superagent-proxy": "^1.0.3"
   }
 }

@@ -3,7 +3,7 @@ const request = require('superagent')
 const proxy = require('superagent-proxy')
 
 // 获取相关视频id列表
-function getVideoList (pageNo, vid) {
+function getVideoList(pageNo, vid) {
   const url = 'https://avgle.com/include/ajax/related_videos.php'
   const proxy_uri = 'http://127.0.0.1:1519'
   proxy(request)
@@ -18,7 +18,7 @@ function getVideoList (pageNo, vid) {
         move: 'next'
       })
       .then(res => {
-        if (res.text !== undefined && res.text !== "") {
+        if (res.text !== undefined && res.text !== '') {
           res.text.replace(/[\n]/g, '')
           const videos = JSON.parse(res.text).videos
           const $ = cheerio.load(videos)
@@ -28,17 +28,20 @@ function getVideoList (pageNo, vid) {
              console.log(videoId)
            }) */
           const vidList = []
-          $('a').each(function (i, elem) {
+          $('a').each(function(i, elem) {
             const href = $(this).attr('href')
             const videoId = href.split('/')[4]
             vidList.push(videoId)
           })
           if (vidList.length > 0) {
-            resolve(vidList)
+            getVideoInfo(vidList)
+              .then(videosList => {
+                resolve(videosList)
+              })
           } else {
             reject()
           }
-        }else {
+        } else {
           reject()
         }
       })
@@ -46,7 +49,36 @@ function getVideoList (pageNo, vid) {
         console.log(err)
       })
   })
+}
 
+// 获取视频列表
+function getVideoInfo(vidList) {
+  const url = 'https://api.avgle.com/v1/video/'
+  const proxy_uri = 'http://127.0.0.1:1519'
+  return new Promise((resolve, reject) => {
+    const requestList = []
+    for (const id of vidList) {
+      proxy(request)
+      requestList.push(
+        request
+          .get(url + id)
+          .proxy(proxy_uri)
+          .set('Accept', 'application/json')
+      )
+    }
+    Promise.all(requestList)
+      .then((resArray) => {
+        if (resArray.length === 0 || resArray === undefined) {
+          reject()
+        } else {
+          const videosList = []
+          for (const res of resArray) {
+            videosList.push(res.body)
+          }
+          resolve(videosList)
+        }
+      })
+  })
 }
 
 module.exports = getVideoList
