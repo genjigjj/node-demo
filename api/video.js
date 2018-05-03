@@ -2,8 +2,8 @@ const cheerio = require('cheerio')
 const request = require('superagent')
 const proxy = require('superagent-proxy')
 
-// 获取相关视频id列表
-function getVideoList(pageNo, vid) {
+// 异步请求，获取相关视频id
+async function getRelatedVid(pageNo, vid) {
   const url = 'https://avgle.com/include/ajax/related_videos.php'
   const proxy_uri = 'http://127.0.0.1:1519'
   proxy(request)
@@ -23,36 +23,26 @@ function getVideoList(pageNo, vid) {
           const videos = JSON.parse(res.text).videos
           const $ = cheerio.load(videos)
           /* $('img').each(function(i, elem){
-             let id = $(this).attr('id')
-             const videoId = id.split('_')[1]
-             console.log(videoId)
-           }) */
+           let id = $(this).attr('id')
+           const videoId = id.split('_')[1]
+           console.log(videoId)
+         }) */
           const vidList = []
           $('a').each(function(i, elem) {
             const href = $(this).attr('href')
             const videoId = href.split('/')[4]
             vidList.push(videoId)
           })
-          if (vidList.length > 0) {
-            getVideoInfo(vidList)
-              .then(videosList => {
-                resolve(videosList)
-              })
-          } else {
-            reject()
-          }
+          resolve(vidList)
         } else {
           reject()
         }
-      })
-      .catch(err => {
-        console.log(err)
       })
   })
 }
 
 // 获取视频列表
-function getVideoInfo(vidList) {
+async function getVideoInfo(vidList) {
   const url = 'https://api.avgle.com/v1/video/'
   const proxy_uri = 'http://127.0.0.1:1519'
   return new Promise((resolve, reject) => {
@@ -81,4 +71,9 @@ function getVideoInfo(vidList) {
   })
 }
 
-module.exports = getVideoList
+async function getData(pageNo, vid) {
+  const vidList = await getRelatedVid(pageNo, vid)
+  return await getVideoInfo(vidList)
+}
+
+module.exports = getData
