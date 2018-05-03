@@ -5,11 +5,13 @@ const getVideoList = require('../api/video')
 router.get('/vids', function(req, res, next) {
   getVideoList(req.query.page, req.query.vid)
     .then(resolve => {
+      res.header('Access-Control-Allow-Origin', '*')
       res.json({
         status: 1,
-        vidList: resolve
+        videosList: resolve
       })
     }, reject => {
+      res.header('Access-Control-Allow-Origin', '*')
       res.json({
         status: 0
       })
