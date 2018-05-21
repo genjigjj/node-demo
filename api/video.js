@@ -1,15 +1,16 @@
 const cheerio = require('cheerio')
 const request = require('superagent')
-const proxy = require('superagent-proxy')
+// const proxy = require('superagent-proxy')
 
 // 异步请求，获取相关视频id
 async function getRelatedVid(pageNo, vid) {
   const url = 'https://avgle.com/include/ajax/related_videos.php'
-  const proxy_uri = 'http://127.0.0.1:1519'
-  proxy(request)
+  // const proxy_uri = 'http://127.0.0.1:1519'
+  // proxy(request)
   return new Promise((resolve, reject) => {
     request
-      .post(url).proxy(proxy_uri)
+      .post(url)
+      // .proxy(proxy_uri)
       .type('form')
       .set('Accept', 'application/json')
       .send({
@@ -44,15 +45,15 @@ async function getRelatedVid(pageNo, vid) {
 // 获取视频列表
 async function getVideoInfo(vidList) {
   const url = 'https://api.avgle.com/v1/video/'
-  const proxy_uri = 'http://127.0.0.1:1519'
+  // const proxy_uri = 'http://127.0.0.1:1519'
   return new Promise((resolve, reject) => {
     const requestList = []
     for (const id of vidList) {
-      proxy(request)
+      // proxy(request)
       requestList.push(
         request
           .get(url + id)
-          .proxy(proxy_uri)
+          // .proxy(proxy_uri)
           .set('Accept', 'application/json')
       )
     }
