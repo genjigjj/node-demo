@@ -24,9 +24,8 @@ router.get('/add', async function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
   let status = 0
   try {
-    if (await store.setValue(req.query.vid) !== null) {
-      status = 1
-    }
+    await store.setValue(parseInt(req.query.vid))
+    status = 1
   } catch (err) {
     console.log(err)
   }
@@ -40,9 +39,8 @@ router.get('/delete', async function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
   let status = 0
   try {
-    if (await store.removeValue(req.query.vid) !== null) {
-      status = 1
-    }
+    await store.removeValue(parseInt(req.query.vid))
+    status = 1
   } catch (err) {
     console.log(err)
   }
@@ -75,7 +73,7 @@ router.get('/contain', async function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
   let status = 0
   try {
-    const flag = await store.isContain(req.query.vid)
+    const flag = await store.isContain(parseInt(req.query.vid))
     if (flag !== null && flag) {
       status = 1
     }
